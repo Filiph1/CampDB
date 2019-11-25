@@ -1,0 +1,190 @@
+SELECT DISTINCT c.campID, orgName, campName,street, city, state, zipcode, genderType, startDate, endDate, startHour, endHour, price, regStartDate , food, transportation, beforeCare, afterCare, latitude , longitude,
+acos(sin(radians(41.959607))*sin(radians(latitude)) + cos(radians(41.959607))*cos(radians(latitude))*cos(radians(longitude) - radians(-87.821288))) * 3959 As D,
+GROUP_CONCAT(t.activity SEPARATOR ', ') as Activities 
+FROM Camp c,  Type t, Address a, Organization o, Gender g , CampType ct 
+where g.genderID = c.genderID and o.campOrgID = c.campOrgID and t.typeID = ct.typeID and ct.campID = c.campID and c.addressID = a.addressID and
+acos(sin(radians(41.959607))*sin(radians(latitude)) + cos(radians(41.959607))*cos(radians(latitude))*cos(radians(longitude) - radians(-87.821288))) * 3959 < 6
+GROUP BY ct.campID
+
+
+
+CREATE TABLE User
+( 
+userID INT NOT NULL AUTO_INCREMENT,
+userName varchar(30),
+userPassword varchar(64),
+firstName varchar(30),
+middleName varchar(20),
+lastName varchar(30),
+street varchar(40),
+city varchar(30),
+state varchar(20),
+zipCode varchar(10),
+phone varchar(15),
+email varchar(40),
+Primary key(userID)
+);
+
+CREATE TABLE OrgUser
+( 
+userOrgID INT NOT NULL AUTO_INCREMENT,
+orgName varchar(30),
+orgUsername varchar(40),
+orgPassword varchar(40),
+email varchar(30),
+phone varchar(20),
+website varchar(30),
+street varchar(40),
+city varchar(30),
+state varchar(20),
+zipCode varchar(10),
+Primary key(userOrgID)
+);
+
+CREATE TABLE Season
+( 
+seasonID INT NOT NULL AUTO_INCREMENT,
+season varchar(40),
+Primary key(seasonID)
+);
+
+CREATE TABLE Type
+( 
+typeID INT NOT NULL AUTO_INCREMENT,
+activity varchar(40),
+Primary key(typeID)
+);
+
+CREATE TABLE Gender
+( 
+genderID INT NOT NULL AUTO_INCREMENT,
+genderType varchar(40),
+Primary key(genderID )
+);
+
+CREATE TABLE Address
+( 
+addressID INT NOT NULL AUTO_INCREMENT,
+street varchar(40),
+city varchar(30),
+state varchar (20),
+zipcode varchar(10),
+longtitude varchar(20),
+latitude varchar(20),
+Primary key(addressID)
+);
+
+CREATE TABLE Organization
+( 
+campOrgID INT NOT NULL AUTO_INCREMENT,
+orgName varchar(40),
+addressID int ,
+phoneNumber varchar (20),
+email varchar (40),
+web varchar(40),
+text varchar (6500),
+Primary key(campOrgID ),
+Foreign key(addressID) references Address(addressID)
+);
+
+CREATE TABLE Camp
+( 
+campID INT NOT NULL AUTO_INCREMENT,
+campOrgID int ,
+campName varchar (40),
+typeID INT,
+genderID int,
+seasonID int,
+minGrade INT,
+maxGrade INT,
+monday varchar(20),
+tuesday varchar(20),
+wednesday varchar(20),
+thursday varchar(20),
+friday varchar(20),
+saturday varchar(20),
+sunday varchar(20),
+regStartDate date, 
+startDate DATE,
+endDate DATE,
+startHour TIME,
+endHour TIME,
+duration INT,
+price int,
+food boolean,
+transportation boolean,
+addressID int,
+beforeCare boolean,
+afterCare boolean,
+Primary key(campID ),
+Foreign key(campOrgID) references Organization(campOrgID),
+Foreign key(genderID) references Gender(genderID),
+Foreign key(seasonID ) references Season(seasonID ),
+Foreign key(addressID) references Address(addressID)
+);
+
+CREATE TABLE CampType
+( 
+typeID INT,
+campID INT,
+Primary key(typeID, campID),
+Foreign key(typeID) references Type(typeID),
+Foreign key(campID) references Camp(campID)
+);
+
+CREATE TABLE Favorite
+( 
+userID INT,
+campID INT,
+Primary key(userID, campID),
+Foreign key(campID) references Camp(campID),
+Foreign key(userID) references User(userID)
+);
+
+CREATE TABLE Food
+( 
+foodID INT NOT NULL AUTO_INCREMENT,
+foodName varchar(30),
+Primary key(foodID)
+);
+
+CREATE TABLE CampFood
+(
+foodID INT,
+campID INT,
+Primary key(foodID, campID),
+Foreign key(foodID) references Food(foodID),
+Foreign key(campID) references Camp(campID)
+);
+
+CREATE TABLE Review
+( 
+userID INT,
+campID INT,
+rating int(5),
+Primary key(userID, campID),
+Foreign key(campID) references Camp(campID),
+Foreign key(userID) references User(userID)
+);
+
+CREATE TABLE Feedback
+( 
+userID INT,
+campID INT,
+text varchar(500),
+Primary key(userID, campID),
+Foreign key(campID) references Camp(campID),
+Foreign key(userID) references User(userID)
+);
+
+CREATE TABLE Zipcode
+( 
+zip INT,
+lat varchar(30),
+lng varchar(30),
+city varchar(30),
+stateAbbreviation varchar(5),
+state varchar(30),
+county varchar(30),
+Primary key(zip)
+);
